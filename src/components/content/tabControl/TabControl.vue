@@ -31,10 +31,11 @@ export default {
 <style>
   .tab-control {
     display: flex;
-    height: 44px;
+    height: 40px;
     font-size: 16px;
     text-align: center;
     background-color: #fff;
+    z-index: 9;
   }
 
   .tab-control-item {
