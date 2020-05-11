@@ -3,13 +3,14 @@
     <nav-bar class="home-nav">
         <div slot="center">购物街</div>
       </nav-bar>
-    <scroll class="content">
+    <scroll class="content" ref="scroll" :probe-type="3" @scroll="contentScroll">
       <home-swiper :banners="banners"></home-swiper>
       <recommond-view :recommends="recommends"></recommond-view>
       <feature-view />
       <tab-control class="tab-control" :titles="['流行', '新款', '精选']" @tabClick="tabClick"></tab-control>
       <goods-list :goods="goods[currentType].list"></goods-list>
     </scroll>
+    <back-top @click.native="backClick" v-show="isShowACtive"/>
   </div>
 </template>
 
@@ -18,6 +19,7 @@ import NavBar from "components/common/navbar/NavBar";
 import Scroll from "components/common/scroll/Scroll";
 import TabControl from "components/content/tabControl/TabControl";
 import GoodsList from "components/content/goods/GoodsList";
+import BackTop from "components/content/backTop/BackTop"
 
 import HomeSwiper from "./childComps/HomeSwiper";
 import RecommondView from "./childComps/RecommendView";
@@ -34,7 +36,8 @@ export default {
     FeatureView,
     TabControl,
     GoodsList,
-    Scroll
+    Scroll,
+    BackTop
   },
   data() {
     return {
@@ -45,7 +48,8 @@ export default {
         new: { page: 0, list: [] },
         sell: { page: 0, list: [] }
       },
-      currentType: "pop"
+      currentType: "pop",
+      isShowACtive: false
     };
   },
   created() {
@@ -71,6 +75,12 @@ export default {
           break;
       }
     },
+    backClick() {
+      this.$refs.scroll.scrollTo(0, 0)
+    },
+    contentScroll(position) {
+      this.isShowACtive = (-position.y) > 1000
+    },
 
     /**
      * 网络请求相关的方法
@@ -94,7 +104,7 @@ export default {
 
 <style scoped>
   #home {
-    /*padding-top: 44px;*/
+    /* padding-top: 44px; */
     height: 100vh;
     position: relative;
   }
