@@ -3,7 +3,7 @@
     <nav-bar class="home-nav">
         <div slot="center">购物街</div>
       </nav-bar>
-    <scroll class="content" ref="scroll" :probe-type="3" @scroll="contentScroll">
+    <scroll class="content" ref="scroll" :probe-type="3" @scroll="contentScroll" :pull-up-load="true" @pullingUp="loadMore">
       <home-swiper :banners="banners"></home-swiper>
       <recommond-view :recommends="recommends"></recommond-view>
       <feature-view />
@@ -53,15 +53,36 @@ export default {
     };
   },
   created() {
+    // 请求多个数据
     this.getHomeMultidata();
+    // 请求商品数据
     this.getHomeGoods("pop");
     this.getHomeGoods("new");
     this.getHomeGoods("sell");
   },
+	mounted() {
+		// 监听 goodsListItem 图片加载完成
+		const refresh = this.debounce(this.$refs.scroll.refresh)
+		this.$bus.$on('goodImgLoad', () => {
+			refresh()
+		})
+	},
   methods: {
     /**
      * 事件监听相关的方法
      */
+		
+		// 防抖函数
+		debounce(fn, delay) {
+			let timer = null
+			return function (...args) {
+				if (timer) clearTimeout(timer)
+				timer = setTimeout(() => {
+					fn.apply(this, args)
+				}, delay)
+			}
+		},
+		
     tabClick(index) {
       switch (index) {
         case 0:
@@ -81,6 +102,11 @@ export default {
     contentScroll(position) {
       this.isShowACtive = (-position.y) > 1000
     },
+    loadMore() {
+      this.getHomeGoods(this.currentType)
+
+      // this.$refs.scroll.scroll.refresh()
+    },
 
     /**
      * 网络请求相关的方法
@@ -96,6 +122,8 @@ export default {
       getHomeGoods(type, page).then(res => {
         this.goods[type].list.push(...res.data.list);
         this.goods[type].page += 1;
+        
+        this.$refs.scroll.finishPullUp()
       });
     }
   }
