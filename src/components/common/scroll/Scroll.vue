@@ -53,6 +53,9 @@
 			refresh() {
 				// console.log('asd')
 				this.scroll && this.scroll.refresh()
+			},
+			getScrollY() {
+				return this.scroll ? this.scroll.y : 0
 			}
 		}
 	};
