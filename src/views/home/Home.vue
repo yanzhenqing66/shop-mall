@@ -3,11 +3,23 @@
 		<nav-bar class="home-nav">
 			<div slot="center">购物街</div>
 		</nav-bar>
-		<scroll class="content" ref="scroll" :probe-type="3" @scroll="contentScroll" :pull-up-load="true" @pullingUp="loadMore">
-			<home-swiper :banners="banners"></home-swiper>
+				<tab-control 	class="tabControl2"
+											:titles="['流行', '新款', '精选']" 
+											@tabClick="tabClick" 
+											ref="tabControl2" 
+											v-show="isTabFixed"></tab-control>
+		<scroll class="content" 
+						ref="scroll" 
+						:probe-type="3" 
+						@scroll="contentScroll" 
+						:pull-up-load="true" 
+						@pullingUp="loadMore">
+			<home-swiper :banners="banners" @swiperImgLoad="swiperImgLoad"></home-swiper>
 			<recommond-view :recommends="recommends"></recommond-view>
 			<feature-view />
-			<tab-control class="tab-control" :titles="['流行', '新款', '精选']" @tabClick="tabClick"></tab-control>
+			<tab-control :titles="['流行', '新款', '精选']" 
+										@tabClick="tabClick" 
+										ref="tabControl1"></tab-control>
 			<goods-list :goods="goods[currentType].list"></goods-list>
 		</scroll>
 		<back-top @click.native="backClick" v-show="isShowACtive" />
@@ -29,7 +41,9 @@
 		getHomeMultidata,
 		getHomeGoods
 	} from "network/home";
-	import {debounce} from "common/utils";
+	import {
+		debounce
+	} from "common/utils";
 
 	export default {
 		name: "Home",
@@ -62,7 +76,9 @@
 					}
 				},
 				currentType: "pop",
-				isShowACtive: false
+				isShowACtive: false,
+				tabOffsetTop: 0,
+				isTabFixed: false
 			};
 		},
 		created() {
@@ -97,17 +113,25 @@
 						this.currentType = "sell";
 						break;
 				}
+				this.$refs.tabControl1.currentIndex = index
+				this.$refs.tabControl2.currentIndex = index
 			},
 			backClick() {
 				this.$refs.scroll.scrollTo(0, 0)
 			},
 			contentScroll(position) {
+				// 判断 backTop 是否显示
 				this.isShowACtive = (-position.y) > 1000
+				
+				this.isTabFixed = (-position.y) > this.tabOffsetTop
 			},
 			loadMore() {
 				this.getHomeGoods(this.currentType)
-
 				// this.$refs.scroll.scroll.refresh()
+			},
+			swiperImgLoad() {
+				// 获取 tab-control 的位置
+				this.tabOffsetTop = this.$refs.tabControl1.$el.offsetTop
 			},
 
 			/**
@@ -124,7 +148,7 @@
 				getHomeGoods(type, page).then(res => {
 					this.goods[type].list.push(...res.data.list);
 					this.goods[type].page += 1;
-
+					// 完成上拉加载更多
 					this.$refs.scroll.finishPullUp()
 				});
 			}
@@ -143,18 +167,23 @@
 		background-color: var(--color-tint);
 		color: #fff;
 
-		position: fixed;
+		/* position: fixed;
 		left: 0;
 		right: 0;
 		top: 0;
+		z-index: 9; */
+	}
+	
+	.tabControl2 {
+		position: relative;
 		z-index: 9;
 	}
 
-	.tab-control {
+	/* .tab-control {
 		position: sticky;
 		top: 44px;
 		z-index: 9;
-	}
+	} */
 
 	.content {
 		overflow: hidden;
@@ -165,9 +194,10 @@
 		right: 0;
 	}
 
-	/*.content {*/
-	/*height: calc(100% - 93px);*/
-	/*overflow: hidden;*/
-	/*margin-top: 44px;*/
-	/*}*/
+
+	/* .content {
+		height: calc(100% - 93px);
+		overflow: hidden;
+		margin-top: 44px;
+	} */
 </style>
