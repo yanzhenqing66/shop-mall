@@ -1,5 +1,5 @@
 {
-  "name": "supermall1",
+  "name": "shopping-street",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -17,5 +17,17 @@
     "@vue/cli-plugin-babel": "~4.3.0",
     "@vue/cli-service": "~4.3.0",
     "vue-template-compiler": "^2.6.11"
-  }
+  },
+  "description": "## Project setup ``` npm install ```",
+  "main": "babel.config.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yanzhenqing66/shopping-street.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yanzhenqing66/shopping-street/issues"
+  },
+  "homepage": "https://github.com/yanzhenqing66/shopping-street#readme"
 }
